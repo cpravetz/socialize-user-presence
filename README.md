@@ -80,23 +80,23 @@ User.attachSchema(StatusSchema);
 // When a full cleanup is necessary we will unset the status field to show all users as offline
 UserPresence.onCleanup(function onCleanup(sessionIds) {
     if (!sessionIds) {
-        Meteor.users.update({}, { $unset: { status: true } }, { multi: true });
+        Meteor.users.updateAsync({}, { $unset: { status: true } }, { multi: true });
     }
 });
 
 // When a user comes online we set their status to online and set the lastOnline field to the current time
 UserPresence.onUserOnline(function onUserOnline(userId) {
-    Meteor.users.update(userId, { $set: { status: 'online', lastOnline: new Date() } });
+    Meteor.users.updateAsync(userId, { $set: { status: 'online', lastOnline: new Date() } });
 });
 
 // When a user goes idle we'll set their status to indicate this
 UserPresence.onUserIdle(function onUserIdle(userId) {
-    Meteor.users.update(userId, { $set: { status: 'idle' } });
+    Meteor.users.updateAsync(userId, { $set: { status: 'idle' } });
 });
 
 // When a user goes offline we'll unset their status field to indicate offline status
 UserPresence.onUserOffline(function onUserOffline(userId) {
-    Meteor.users.update(userId, { $unset: { status: true } });
+    Meteor.users.updateAsync(userId, { $unset: { status: true } });
 });
 ```
 
@@ -108,7 +108,7 @@ The server side API consists of methods which register callbacks to run when a u
 
 ```javascript
 UserPresence.onSessionConnected(function(connection, userId){
-    EventLogs.insert({eventType: 'user-connected', userId, connection});
+    EventLogs.insertAsync({eventType: 'user-connected', userId, connection});
 });
 ```
 
@@ -116,7 +116,7 @@ UserPresence.onSessionConnected(function(connection, userId){
 
 ```javascript
 UserPresence.onSessionDisconnected(function (connection, userId) {
-    EventLogs.insert({eventType: 'user-disconnected', userId, connection});
+    EventLogs.insertAsync({eventType: 'user-disconnected', userId, connection});
 });
 ```
 
@@ -124,7 +124,7 @@ UserPresence.onSessionDisconnected(function (connection, userId) {
 
 ```javascript
 UserPresence.onCleanup(function () {
-    Meteor.users.update({}, { $unset: { status: true } }, { multi: true });
+    Meteor.users.updateAsync({}, { $unset: { status: true } }, { multi: true });
 });
 ```
 
@@ -132,7 +132,7 @@ UserPresence.onCleanup(function () {
 
 ```javascript
 UserPresence.onUserOnline(function (userId) {
-    ProfilesCollection.update({ _id: userId }, { $set: { status: 'online' } });
+    ProfilesCollection.updateAsync({ _id: userId }, { $set: { status: 'online' } });
 });
 ```
 
@@ -140,7 +140,7 @@ UserPresence.onUserOnline(function (userId) {
 
 ```javascript
 UserPresence.onUserIdle(function (userId) {
-    ProfilesCollection.update({ _id: userId }, { $set: { status: 'idle' } });
+    ProfilesCollection.updateAsync({ _id: userId }, { $set: { status: 'idle' } });
 });
 ```
 
@@ -148,7 +148,7 @@ UserPresence.onUserIdle(function (userId) {
 
 ```javascript
 UserPresence.onUserOffline(function (userId) {
-    ProfilesCollection.update({ _id: userId }, { $unset: { status: true } });
+    ProfilesCollection.updateAsync({ _id: userId }, { $unset: { status: true } });
 });
 ```
 

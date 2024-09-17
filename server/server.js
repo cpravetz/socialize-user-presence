@@ -13,7 +13,7 @@ Meteor.methods({
     updateSessionStatus(status) {
         check(status, Match.Integer);
         if (this.userId && (status === 1 || status === 2)) {
-            UserSessions.update(this.connection.id, { $set: { status } });
+            UserSessions.updateAsync(this.connection.id, { $set: { status } });
             determineStatus(this.userId);
         }
     },

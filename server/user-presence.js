@@ -133,12 +133,12 @@ export const determineStatus = (userId, connection) => {
 };
 
 export const userConnected = (sessionId, userId, serverId, connection) => {
-    UserSessions.insert({ serverId, userId, _id: sessionId, status: 2 });
+    UserSessions.insertAsync({ serverId, userId, _id: sessionId, status: 2 });
     determineStatus(userId, connection);
 };
 
 export const userDisconnected = (sessionId, userId, connection) => {
-    UserSessions.remove(sessionId);
+    UserSessions.removeAsync(sessionId);
     determineStatus(userId, connection);
 };
 
@@ -166,6 +166,6 @@ ServerPresence.onCleanup((serverId) => {
         cleanup(sessionIds);
     } else {
         cleanup();
-        UserSessions.remove({});
+        UserSessions.removeAsync({});
     }
 });
